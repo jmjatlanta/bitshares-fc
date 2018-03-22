@@ -53,7 +53,7 @@ std::string run_command( const std::string& command )
     return "";
 }
 
-void print_stacktrace_linenums( void** addrlist, int addrlen )
+void print_stacktrace_linenums(std::ostream& out, void** addrlist, int addrlen )
 {
    if( addrlen == 0 )
       return;
@@ -63,6 +63,7 @@ void print_stacktrace_linenums( void** addrlist, int addrlen )
    if( result < 0 )
    {
       std::cerr << "print_stacktrace_linenums() failed, could not read PID" << std::endl;
+      out << "print_stacktrace_linenums() failed, could not read PID" << std::endl;
       return;
    }
    else
@@ -75,10 +76,10 @@ void print_stacktrace_linenums( void** addrlist, int addrlen )
    for( int i=0; i<addrlen; i++ )
       ss_cmd << " " << std::setfill('0') << std::setw(16) << std::hex << std::noshowbase << uint64_t(addrlist[i]);
    std::string cmd = ss_cmd.str();
-   std::cerr << "executing command:" << std::endl;
-   std::cerr << cmd << std::endl;
+   out << "executing command:" << '\n'
+         << cmd << '\n';
    std::string output = run_command(cmd);
-   std::cerr << output << std::endl;
+   out << output << '\n';
 }
 
 void print_stacktrace(std::ostream& out, unsigned int max_frames /* = 63 */, void* caller_overwrite_hack /* = nullptr */ )
@@ -163,7 +164,7 @@ void print_stacktrace(std::ostream& out, unsigned int max_frames /* = 63 */, voi
 	}
     }
 
-    print_stacktrace_linenums(addrlist, addrlen);
+    print_stacktrace_linenums(out, addrlist, addrlen);
 
     free(funcname);
     free(symbollist);
@@ -197,7 +198,7 @@ void segfault_handler(int sig_num, siginfo_t * info, void * ucontext)
 #endif
 
    // avoids compiler warning
-   //FC_UNUSED(caller_address);
+   (void)caller_address;
 
    print_stacktrace( std::cerr, 128, nullptr );
    std::exit(EXIT_FAILURE);
