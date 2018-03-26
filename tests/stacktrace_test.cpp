@@ -1,5 +1,6 @@
 #include <boost/test/unit_test.hpp>
 
+#include <signal.h>
 #include <fc/stacktrace.hpp>
 #include <fc/thread/thread.hpp>
 
@@ -34,4 +35,11 @@ BOOST_AUTO_TEST_CASE(threaded_stacktrace_test)
    //std::cout << results << '\n';
 }
 
+/* this test causes a segfault on purpose to test the event handler
+BOOST_AUTO_TEST_CASE(cause_segfault)
+{
+   fc::print_stacktrace_on_segfault();
+   ::raise(SIGSEGV);
+}
+*/
 BOOST_AUTO_TEST_SUITE_END()
