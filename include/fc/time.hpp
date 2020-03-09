@@ -149,10 +149,10 @@ namespace fc {
       friend bool operator >= ( const time_point_decisec& a, const time_point_decisec& b )  { return a.utc_decisecs >= b.utc_decisecs; }
       friend bool operator == ( const time_point_decisec& a, const time_point_decisec& b ) { return a.utc_decisecs == b.utc_decisecs; }
       friend bool operator != ( const time_point_decisec& a, const time_point_decisec& b ) { return a.utc_decisecs != b.utc_decisecs; }
-      bool operator < ( const time_point_sec& b ) { return utc_decisecs < b.sec_since_epoch() * 10; }
-      bool operator > ( const time_point_sec& b ) { return utc_decisecs > b.sec_since_epoch() * 10; }
-      bool operator <= ( const time_point_sec& b ) { return utc_decisecs <= b.sec_since_epoch() * 10; }
-      bool operator >= ( const time_point_sec& b ) { return utc_decisecs >= b.sec_since_epoch() * 10; }
+      bool operator < ( const time_point_sec& b )const { return utc_decisecs < b.sec_since_epoch() * 10; }
+      bool operator > ( const time_point_sec& b )const { return utc_decisecs > b.sec_since_epoch() * 10; }
+      bool operator <= ( const time_point_sec& b )const { return utc_decisecs <= b.sec_since_epoch() * 10; }
+      bool operator >= ( const time_point_sec& b )const { return utc_decisecs >= b.sec_since_epoch() * 10; }
       time_point_decisec&  operator += ( uint64_t m ) { utc_decisecs += m; return *this; }
       time_point_decisec&  operator += ( microseconds m ) { utc_decisecs += m.count() / 100000ll; return *this; }
       time_point_decisec&  operator -= ( uint64_t m ) { utc_decisecs -= m; return *this; }
