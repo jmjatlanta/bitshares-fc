@@ -93,6 +93,12 @@ namespace fc {
   void from_variant( const fc::variant& v, fc::time_point_sec& t, uint32_t max_depth ) {
     t = fc::time_point_sec::from_iso_string( v.as_string() );
   }
+  void to_variant( const fc::time_point_decisec& t, variant& v, uint32_t max_depth ) {
+    to_variant( std::string( t ), v, max_depth );
+  }
+  void from_variant( const fc::variant& v, fc::time_point_sec& t, uint32_t max_depth ) {
+    t = fc::time_point_sec::from_iso_string( v.as_string() );
+  }
 
   // inspired by show_date_relative() in git's date.c
   string get_approximate_relative_time_string(const time_point_sec& event_time,
