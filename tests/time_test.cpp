@@ -1,6 +1,7 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/version.hpp>
 #include <fc/time.hpp>
+#include <iostream>
 
 using namespace fc;
 
@@ -101,39 +102,39 @@ BOOST_AUTO_TEST_CASE(time_point_sec_test)
     BOOST_CHECK( tp3g > tp16m );
 }
 
-BOOST_AUTO_TEST_CASE( decisec_test )
+BOOST_AUTO_TEST_CASE( time_point_decisec_test )
 {
     time_point_decisec tp0(0);
     BOOST_CHECK_EQUAL( "1970-01-01T00:00:00", tp0.to_iso_string() );
     BOOST_CHECK_EQUAL( "19700101T000000", tp0.to_non_delimited_iso_string() );
 
     time_point_decisec tp1(1);
-    BOOST_CHECK_EQUAL( "1970-01-01T00:00:00", tp1.to_iso_string() );
-    BOOST_CHECK_EQUAL( "19700101T000000", tp1.to_non_delimited_iso_string() );
+    BOOST_CHECK_EQUAL( "1970-01-01T00:00:00.1", tp1.to_iso_string() );
+    BOOST_CHECK_EQUAL( "19700101T000000.1", tp1.to_non_delimited_iso_string() );
 
     time_point_decisec tp10(10);
     BOOST_CHECK_EQUAL( "1970-01-01T00:00:01", tp10.to_iso_string() );
     BOOST_CHECK_EQUAL( "19700101T000001", tp10.to_non_delimited_iso_string() );
 
     time_point_decisec tp256(0x100);
-    BOOST_CHECK_EQUAL( "1970-01-01T00:00:26", tp256.to_iso_string() );
-    BOOST_CHECK_EQUAL( "19700101T000026", tp256.to_non_delimited_iso_string() );
+    BOOST_CHECK_EQUAL( "1970-01-01T00:00:25.6", tp256.to_iso_string() );
+    BOOST_CHECK_EQUAL( "19700101T000025.6", tp256.to_non_delimited_iso_string() );
 
     time_point_decisec tp64k(0x10000);
-    BOOST_CHECK_EQUAL( "1970-01-01T01:49:14", tp64k.to_iso_string() );
-    BOOST_CHECK_EQUAL( "19700101T014914", tp64k.to_non_delimited_iso_string() );
+    BOOST_CHECK_EQUAL( "1970-01-01T01:49:13.6", tp64k.to_iso_string() );
+    BOOST_CHECK_EQUAL( "19700101T014913.6", tp64k.to_non_delimited_iso_string() );
 
     time_point_decisec tp16m(0x1000000);
-    BOOST_CHECK_EQUAL( "1970-01-20T10:02:02", tp16m.to_iso_string() );
-    BOOST_CHECK_EQUAL( "19700120T100202", tp16m.to_non_delimited_iso_string() );
+    BOOST_CHECK_EQUAL( "1970-01-20T10:02:01.6", tp16m.to_iso_string() );
+    BOOST_CHECK_EQUAL( "19700120T100201.6", tp16m.to_non_delimited_iso_string() );
 
     time_point_decisec tp2gm1(0x7fffffffU);
-    BOOST_CHECK_EQUAL( "1976-10-21T12:19:25", tp2gm1.to_iso_string() );
-    BOOST_CHECK_EQUAL( "19761021T121925", tp2gm1.to_non_delimited_iso_string() );
+    BOOST_CHECK_EQUAL( "1976-10-21T12:19:24.7", tp2gm1.to_iso_string() );
+    BOOST_CHECK_EQUAL( "19761021T121924.7", tp2gm1.to_non_delimited_iso_string() );
 
     time_point_decisec tp2g(0x80000000U);
-    BOOST_CHECK_EQUAL( "1976-10-21T12:19:25", tp2g.to_iso_string() );
-    BOOST_CHECK_EQUAL( "19761021T121925", tp2g.to_non_delimited_iso_string() );
+    BOOST_CHECK_EQUAL( "1976-10-21T12:19:24.8", tp2g.to_iso_string() );
+    BOOST_CHECK_EQUAL( "19761021T121924.8", tp2g.to_non_delimited_iso_string() );
 
     time_point_decisec tp3g(0xc0000000U);
     if (BOOST_VERSION >= BOOST_VERSION_NUMBER(1,64,0)) {
@@ -214,6 +215,27 @@ BOOST_AUTO_TEST_CASE( decisec_test )
     BOOST_CHECK( tp10 <= s );
     BOOST_CHECK( s > static_cast<fc::time_point>(tp10) );
     BOOST_CHECK( s >= static_cast<fc::time_point>(tp10) );
+}
+
+BOOST_AUTO_TEST_CASE( time_point_to_string_test )
+{
+    // time_point
+    fc::time_point p0(fc::microseconds(1));
+    //std::string result = static_cast<std::string>(p0);
+    //std::cerr << "Result: " << result << "\n";
+    BOOST_CHECK ( static_cast<std::string>(p0) == "1970-01-01T00:00:00.000001");
+    // time_point_decisec
+    fc::time_point p1( fc::microseconds(100000));
+    fc::time_point_decisec d1(p1);
+    //result = static_cast<std::string>(p1);
+    //std::cerr << "Result: " << result << "\n";
+    BOOST_CHECK( static_cast<std::string>(p1) == "1970-01-01T00:00:00.100000" );
+    BOOST_CHECK( static_cast<std::string>(d1) == "1970-01-01T00:00:00.1" );
+    fc::time_point_sec p3( p1 );
+    //result = static_cast<std::string>(p3);
+    //std::cerr << "Result: " << result << "\n";
+    BOOST_CHECK( static_cast<std::string>(p3) == "1970-01-01T00:00:00" );    
+
 }
 
 BOOST_AUTO_TEST_SUITE_END()

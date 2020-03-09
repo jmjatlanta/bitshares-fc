@@ -18,7 +18,12 @@ namespace fc {
   std::string time_point_decisec::to_non_delimited_iso_string()const
   {
     const auto ptime = boost::posix_time::from_time_t( time_t( sec_since_epoch() ) );
-    return boost::posix_time::to_iso_string( ptime );
+    std::stringstream ss;
+    ss << boost::posix_time::to_iso_string( ptime );
+    uint64_t frac = utc_decisecs - sec_since_epoch() * 10;
+    if (frac > 0)
+      ss << "." << frac;
+    return ss.str();
   }
 
   std::string time_point_sec::to_non_delimited_iso_string()const
@@ -29,8 +34,15 @@ namespace fc {
 
   std::string time_point_decisec::to_iso_string()const
   {
-    const auto ptime = boost::posix_time::from_time_t( time_t( sec_since_epoch() ) );
-    return boost::posix_time::to_iso_extended_string( ptime );
+    // get second resolution
+    fc::time_point_sec sec( sec_since_epoch() );
+    std::stringstream ss;
+    ss << sec.to_iso_string();
+    // add the fraction
+    uint64_t frac = utc_decisecs - (sec_since_epoch() * 10);
+    if (frac > 0)
+      ss << "." << frac;
+    return ss.str();
   }
 
   std::string time_point_sec::to_iso_string()const
@@ -57,7 +69,7 @@ namespace fc {
           pt = boost::date_time::parse_delimited_time<boost::posix_time::ptime>( s, 'T' );
       else
           pt = boost::posix_time::from_iso_string( s );
-      return fc::time_point_decisec( (pt - epoch).total_seconds() * 10 );
+      return fc::time_point_decisec( fc::time_point( fc::microseconds((pt - epoch).total_microseconds())) );
   } FC_RETHROW_EXCEPTIONS( warn, "unable to convert ISO-formatted string to fc::time_point_sec" ) }
 
   time_point_sec time_point_sec::from_iso_string( const std::string& s )
@@ -73,7 +85,14 @@ namespace fc {
 
   time_point::operator std::string()const
   {
-      return std::string( time_point_sec( *this ) );
+      fc::time_point_sec secs( *this );
+      std::stringstream ss;
+      ss << std::string( secs );
+      ss << ".";
+      fc::microseconds ms = *this - secs;
+      ss << std::setw(6) << std::setfill('0');
+      ss << ms.count();
+      return ss.str();
   }
 
   time_point time_point::from_iso_string( const std::string& s )
@@ -96,8 +115,8 @@ namespace fc {
   void to_variant( const fc::time_point_decisec& t, variant& v, uint32_t max_depth ) {
     to_variant( std::string( t ), v, max_depth );
   }
-  void from_variant( const fc::variant& v, fc::time_point_sec& t, uint32_t max_depth ) {
-    t = fc::time_point_sec::from_iso_string( v.as_string() );
+  void from_variant( const fc::variant& v, fc::time_point_decisec& t, uint32_t max_depth ) {
+    t = fc::time_point_decisec::from_iso_string( v.as_string() );
   }
 
   // inspired by show_date_relative() in git's date.c
