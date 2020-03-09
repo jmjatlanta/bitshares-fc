@@ -191,7 +191,7 @@ namespace fc {
 FC_REFLECT_TYPENAME( fc::time_point )
 FC_REFLECT_TYPENAME( fc::microseconds )
 FC_REFLECT_TYPENAME( fc::time_point_sec )
-
+FC_REFLECT_TYPENAME( fc::time_point_decisec )
 #ifdef _MSC_VER
   #pragma warning (pop)
 #endif /// #ifdef _MSC_VER
