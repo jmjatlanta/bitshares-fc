@@ -208,6 +208,12 @@ BOOST_AUTO_TEST_CASE( decisec_test )
     BOOST_CHECK( tp3g > tp2gm1 );
     BOOST_CHECK( tp3g > tp2g );
     BOOST_CHECK( tp3g > tp16m );
+
+    time_point_sec s(100);
+    BOOST_CHECK( tp10 < s );
+    BOOST_CHECK( tp10 <= s );
+    BOOST_CHECK( s > static_cast<fc::time_point>(tp10) );
+    BOOST_CHECK( s >= static_cast<fc::time_point>(tp10) );
 }
 
 BOOST_AUTO_TEST_SUITE_END()
