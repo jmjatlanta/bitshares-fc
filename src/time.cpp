@@ -15,10 +15,22 @@ namespace fc {
      return time_point( microseconds( bch::duration_cast<bch::microseconds>( bch::system_clock::now().time_since_epoch() ).count() ) );
   }
 
+  std::string time_point_decisec::to_non_delimited_iso_string()const
+  {
+    const auto ptime = boost::posix_time::from_time_t( time_t( sec_since_epoch() ) );
+    return boost::posix_time::to_iso_string( ptime );
+  }
+
   std::string time_point_sec::to_non_delimited_iso_string()const
   {
     const auto ptime = boost::posix_time::from_time_t( time_t( sec_since_epoch() ) );
     return boost::posix_time::to_iso_string( ptime );
+  }
+
+  std::string time_point_decisec::to_iso_string()const
+  {
+    const auto ptime = boost::posix_time::from_time_t( time_t( sec_since_epoch() ) );
+    return boost::posix_time::to_iso_extended_string( ptime );
   }
 
   std::string time_point_sec::to_iso_string()const
@@ -27,10 +39,26 @@ namespace fc {
     return boost::posix_time::to_iso_extended_string( ptime );
   }
 
+  time_point_decisec::operator std::string()const
+  {
+    return this->to_iso_string();
+  }
+
   time_point_sec::operator std::string()const
   {
       return this->to_iso_string();
   }
+
+  time_point_decisec time_point_decisec::from_iso_string( const std::string& s)
+  { try {
+      static boost::posix_time::ptime epoch = boost::posix_time::from_time_t( 0 );
+      boost::posix_time::ptime pt;
+      if( s.size() >= 5 && s.at( 4 ) == '-' ) // http://en.wikipedia.org/wiki/ISO_8601
+          pt = boost::date_time::parse_delimited_time<boost::posix_time::ptime>( s, 'T' );
+      else
+          pt = boost::posix_time::from_iso_string( s );
+      return fc::time_point_decisec( (pt - epoch).total_seconds() * 10 );
+  } FC_RETHROW_EXCEPTIONS( warn, "unable to convert ISO-formatted string to fc::time_point_sec" ) }
 
   time_point_sec time_point_sec::from_iso_string( const std::string& s )
   { try {
