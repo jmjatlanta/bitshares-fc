@@ -134,8 +134,9 @@ namespace fc {
       static time_point_decisec maximum() { return time_point_decisec( 0xffffffffffffffff ); }
       static time_point_decisec min() { return time_point_decisec(0); }
 
-      operator time_point()const { return time_point( fc::milliseconds( utc_decisecs * 100) ); }
-      uint32_t sec_since_epoch()const { return utc_decisecs / 10; }
+      operator time_point()const { return time_point( fc::microseconds( utc_decisecs * 100000) ); }
+      operator time_point_sec()const { return time_point_sec( utc_decisecs / 10 ); }
+      uint64_t sec_since_epoch()const { return utc_decisecs / 10; }
       uint64_t decisec_since_epoch()const { return utc_decisecs; }
 
       time_point_decisec operator = ( const fc::time_point& t )

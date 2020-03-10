@@ -215,6 +215,9 @@ BOOST_AUTO_TEST_CASE( time_point_decisec_test )
     BOOST_CHECK( tp10 <= s );
     BOOST_CHECK( s > static_cast<fc::time_point>(tp10) );
     BOOST_CHECK( s >= static_cast<fc::time_point>(tp10) );
+
+    time_point_sec converted = tp10;
+    BOOST_CHECK( converted.sec_since_epoch() == tp10.sec_since_epoch() );
 }
 
 BOOST_AUTO_TEST_CASE( time_point_to_string_test )
@@ -234,8 +237,10 @@ BOOST_AUTO_TEST_CASE( time_point_to_string_test )
     fc::time_point_sec p3( p1 );
     //result = static_cast<std::string>(p3);
     //std::cerr << "Result: " << result << "\n";
-    BOOST_CHECK( static_cast<std::string>(p3) == "1970-01-01T00:00:00" );    
-
+    BOOST_CHECK( static_cast<std::string>(p3) == "1970-01-01T00:00:00" );   
+    fc::time_point_sec s(fc::time_point::maximum()); 
+    std::cerr << "Maximum time_point: " << s.to_iso_string() << "\n";
+    std::cerr << "Maximum time_point_decisec: " << fc::time_point_decisec::maximum().to_iso_string() << "\n";
 }
 
 BOOST_AUTO_TEST_SUITE_END()
