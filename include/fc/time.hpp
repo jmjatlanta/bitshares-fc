@@ -70,6 +70,53 @@ namespace fc {
         microseconds elapsed;
   };
 
+  class time_point_decisec
+  {
+    public:
+      time_point_decisec() : utc_decisecs(0){}
+      explicit time_point_decisec(uint64_t deciseconds) : utc_decisecs(deciseconds) {}
+      time_point_decisec( const time_point& t)
+          : utc_decisecs( t.time_since_epoch().count() / 100000ll ) {}
+
+      static time_point_decisec maximum() { return time_point_decisec( 0xffffffffffffffff ); }
+      static time_point_decisec min() { return time_point_decisec(0); }
+
+      operator time_point()const { return time_point( fc::microseconds( utc_decisecs * 100000) ); }
+      uint64_t sec_since_epoch()const { return utc_decisecs / 10; }
+      uint64_t decisec_since_epoch()const { return utc_decisecs; }
+
+      time_point_decisec operator = ( const fc::time_point& t )
+      {
+        utc_decisecs = t.time_since_epoch().count() / 100000ll;
+        return *this;
+      }
+      friend bool operator < ( const time_point_decisec& a, const time_point_decisec& b )  { return a.utc_decisecs < b.utc_decisecs; }
+      friend bool operator > ( const time_point_decisec& a, const time_point_decisec& b )  { return a.utc_decisecs > b.utc_decisecs; }
+      friend bool operator <= ( const time_point_decisec& a, const time_point_decisec& b )  { return a.utc_decisecs <= b.utc_decisecs; }
+      friend bool operator >= ( const time_point_decisec& a, const time_point_decisec& b )  { return a.utc_decisecs >= b.utc_decisecs; }
+      friend bool operator == ( const time_point_decisec& a, const time_point_decisec& b ) { return a.utc_decisecs == b.utc_decisecs; }
+      friend bool operator != ( const time_point_decisec& a, const time_point_decisec& b ) { return a.utc_decisecs != b.utc_decisecs; }
+      time_point_decisec&  operator += ( uint64_t m ) { utc_decisecs += m; return *this; }
+      time_point_decisec&  operator += ( microseconds m ) { utc_decisecs += m.count() / 100000ll; return *this; }
+      time_point_decisec&  operator -= ( uint64_t m ) { utc_decisecs -= m; return *this; }
+      time_point_decisec&  operator -= ( microseconds m ) { utc_decisecs -= m.count() / 100000ll; return *this; }
+      time_point_decisec   operator +( uint64_t offset )const { return time_point_decisec(utc_decisecs + offset); }
+      time_point_decisec   operator -( uint64_t offset )const { return time_point_decisec(utc_decisecs - offset); }
+
+      friend time_point   operator + ( const time_point_decisec& t, const microseconds& m )   { return time_point(t) + m; }
+      friend time_point   operator - ( const time_point_decisec& t, const microseconds& m )   { return time_point(t) - m; }
+      friend microseconds operator - ( const time_point_decisec& t, const time_point_decisec& m ) { return time_point(t) - time_point(m); }
+      friend microseconds operator - ( const time_point& t, const time_point_decisec& m ) { return time_point(t) - time_point(m); }
+
+      std::string to_non_delimited_iso_string()const;
+      std::string to_iso_string()const;
+
+      operator std::string()const;
+      static time_point_decisec from_iso_string( const std::string& s );
+    private:
+      uint64_t utc_decisecs;
+  };
+
   /**
    *  A lower resolution time_point accurate only to seconds from 1970
    */
@@ -84,6 +131,9 @@ namespace fc {
 
         time_point_sec( const time_point& t )
         :utc_seconds( t.time_since_epoch().count() / 1000000ll ){}
+
+        time_point_sec( const time_point_decisec& t)
+        : utc_seconds(t.sec_since_epoch()) {}
 
         static time_point_sec maximum() { return time_point_sec(0xffffffff); }
         static time_point_sec min() { return time_point_sec(0); }
@@ -121,58 +171,6 @@ namespace fc {
 
     private:
         uint32_t utc_seconds;
-  };
-
-  class time_point_decisec
-  {
-    public:
-      time_point_decisec() : utc_decisecs(0){}
-      explicit time_point_decisec(uint64_t deciseconds) : utc_decisecs(deciseconds) {}
-      time_point_decisec( const time_point& t)
-          : utc_decisecs( t.time_since_epoch().count() / 100000ll ) {}
-
-      static time_point_decisec maximum() { return time_point_decisec( 0xffffffffffffffff ); }
-      static time_point_decisec min() { return time_point_decisec(0); }
-
-      operator time_point()const { return time_point( fc::microseconds( utc_decisecs * 100000) ); }
-      operator time_point_sec()const { return time_point_sec( utc_decisecs / 10 ); }
-      uint64_t sec_since_epoch()const { return utc_decisecs / 10; }
-      uint64_t decisec_since_epoch()const { return utc_decisecs; }
-
-      time_point_decisec operator = ( const fc::time_point& t )
-      {
-        utc_decisecs = t.time_since_epoch().count() / 100000ll;
-        return *this;
-      }
-      friend bool operator < ( const time_point_decisec& a, const time_point_decisec& b )  { return a.utc_decisecs < b.utc_decisecs; }
-      friend bool operator > ( const time_point_decisec& a, const time_point_decisec& b )  { return a.utc_decisecs > b.utc_decisecs; }
-      friend bool operator <= ( const time_point_decisec& a, const time_point_decisec& b )  { return a.utc_decisecs <= b.utc_decisecs; }
-      friend bool operator >= ( const time_point_decisec& a, const time_point_decisec& b )  { return a.utc_decisecs >= b.utc_decisecs; }
-      friend bool operator == ( const time_point_decisec& a, const time_point_decisec& b ) { return a.utc_decisecs == b.utc_decisecs; }
-      friend bool operator != ( const time_point_decisec& a, const time_point_decisec& b ) { return a.utc_decisecs != b.utc_decisecs; }
-      bool operator < ( const time_point_sec& b )const { return utc_decisecs < b.sec_since_epoch() * 10; }
-      bool operator > ( const time_point_sec& b )const { return utc_decisecs > b.sec_since_epoch() * 10; }
-      bool operator <= ( const time_point_sec& b )const { return utc_decisecs <= b.sec_since_epoch() * 10; }
-      bool operator >= ( const time_point_sec& b )const { return utc_decisecs >= b.sec_since_epoch() * 10; }
-      time_point_decisec&  operator += ( uint64_t m ) { utc_decisecs += m; return *this; }
-      time_point_decisec&  operator += ( microseconds m ) { utc_decisecs += m.count() / 100000ll; return *this; }
-      time_point_decisec&  operator -= ( uint64_t m ) { utc_decisecs -= m; return *this; }
-      time_point_decisec&  operator -= ( microseconds m ) { utc_decisecs -= m.count() / 100000ll; return *this; }
-      time_point_decisec   operator +( uint64_t offset )const { return time_point_decisec(utc_decisecs + offset); }
-      time_point_decisec   operator -( uint64_t offset )const { return time_point_decisec(utc_decisecs - offset); }
-
-      friend time_point   operator + ( const time_point_decisec& t, const microseconds& m )   { return time_point(t) + m; }
-      friend time_point   operator - ( const time_point_decisec& t, const microseconds& m )   { return time_point(t) - m; }
-      friend microseconds operator - ( const time_point_decisec& t, const time_point_decisec& m ) { return time_point(t) - time_point(m); }
-      friend microseconds operator - ( const time_point& t, const time_point_decisec& m ) { return time_point(t) - time_point(m); }
-
-      std::string to_non_delimited_iso_string()const;
-      std::string to_iso_string()const;
-
-      operator std::string()const;
-      static time_point_decisec from_iso_string( const std::string& s );
-    private:
-      uint64_t utc_decisecs;
   };
 
   typedef fc::optional<time_point> otime_point;
