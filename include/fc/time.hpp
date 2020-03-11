@@ -140,7 +140,6 @@ namespace fc {
         static time_point_sec min() { return time_point_sec(0); }
 
         operator time_point()const { return time_point( fc::seconds( utc_seconds) ); }
-        operator time_point_decisec()const { return time_point_decisec( utc_seconds * 10 ); }
         uint32_t sec_since_epoch()const { return utc_seconds; }
 
         time_point_sec operator = ( const fc::time_point& t )
