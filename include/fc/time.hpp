@@ -149,8 +149,10 @@ namespace fc {
           return *this;
         }
         friend bool      operator < ( const time_point_sec& a, const time_point_sec& b )  { return a.utc_seconds < b.utc_seconds; }
+        friend bool operator < (const time_point_decisec& a, const time_point_sec& b) { return a.sec_since_epoch() < b.sec_since_epoch(); }
         friend bool      operator > ( const time_point_sec& a, const time_point_sec& b )  { return a.utc_seconds > b.utc_seconds; }
         friend bool      operator <= ( const time_point_sec& a, const time_point_sec& b )  { return a.utc_seconds <= b.utc_seconds; }
+        friend bool operator <= (const time_point_decisec& a, const time_point_sec& b) { return a.sec_since_epoch() <= b.sec_since_epoch(); }
         friend bool      operator >= ( const time_point_sec& a, const time_point_sec& b )  { return a.utc_seconds >= b.utc_seconds; }
         friend bool      operator == ( const time_point_sec& a, const time_point_sec& b ) { return a.utc_seconds == b.utc_seconds; }
         friend bool      operator != ( const time_point_sec& a, const time_point_sec& b ) { return a.utc_seconds != b.utc_seconds; }
