@@ -50,6 +50,7 @@ namespace fc
    class mutable_variant_object;
    class time_point;
    class time_point_sec;
+   class time_point_decisec;
    class microseconds;
    template<typename T> struct safe;
    template<typename... Types>
@@ -146,6 +147,9 @@ namespace fc
 
    void to_variant( const time_point_sec& var,   variant& vo, uint32_t max_depth );
    void from_variant( const variant& var, time_point_sec& vo, uint32_t max_depth );
+
+   void to_variant( const time_point_decisec& var,   variant& vo, uint32_t max_depth );
+   void from_variant( const variant& var, time_point_decisec& vo, uint32_t max_depth );
 
    void to_variant( const microseconds& input_microseconds,   variant& output_variant, uint32_t max_depth );
    void from_variant( const variant& input_variant, microseconds& output_microseconds, uint32_t max_depth );

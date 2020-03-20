@@ -32,6 +32,7 @@ ZERO_CHECK
 *.opensdf
 Debug/
 Release/
+build/
 
 CMakeCache.txt
 CMakeFiles

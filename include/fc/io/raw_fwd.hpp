@@ -21,6 +21,7 @@
 namespace fc {
    class time_point;
    class time_point_sec;
+   class time_point_decisec;
    class variant;
    class variant_object;
    class path;

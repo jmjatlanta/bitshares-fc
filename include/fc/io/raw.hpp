@@ -116,6 +116,20 @@ namespace fc {
     } FC_RETHROW_EXCEPTIONS( warn, "" ) }
 
     template<typename Stream>
+    inline void pack( Stream& s, const fc::time_point_decisec& tp, uint32_t _max_depth )
+    {
+       pack( s, tp.decisec_since_epoch(), _max_depth );
+    }
+
+    template<typename Stream>
+    inline void unpack( Stream& s, fc::time_point_decisec& tp, uint32_t _max_depth )
+    { try {
+       uint64_t decisec;
+       unpack( s, decisec, _max_depth );
+       tp = fc::time_point_decisec(decisec);
+    } FC_RETHROW_EXCEPTIONS( warn, "" ) }
+
+    template<typename Stream>
     inline void pack( Stream& s, const fc::time_point& tp, uint32_t _max_depth )
     {
        pack( s, tp.time_since_epoch().count(), _max_depth );
