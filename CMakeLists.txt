@@ -21,12 +21,8 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/GitVersionGen")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules")
 
 INCLUDE(GetPrerequisites)
-INCLUDE( VersionMacros )
-INCLUDE( SetupTargetMacros )
 INCLUDE(GetGitRevisionDescription)
 INCLUDE(CheckLibraryExists)
-
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/Legacy)
 
 get_git_head_revision(GIT_REFSPEC FC_GIT_REVISION_SHA)
 get_git_unix_timestamp(FC_GIT_REVISION_UNIX_TIMESTAMP)
@@ -138,14 +134,15 @@ IF( WIN32 )
   # iphlpapi.lib
 ENDIF(WIN32)
 
-FIND_PACKAGE(Boost CONFIG COMPONENTS ${BOOST_COMPONENTS})
+set(Boost_DIR "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/Boost")
+FIND_PACKAGE(Boost CONFIG COMPONENTS ${BOOST_COMPONENTS} )
 
 IF(NOT WIN32)
-    MESSAGE(STATUS "Configuring fc to build on Unix/Apple")
+  MESSAGE(STATUS "Configuring fc to build on Unix/Apple")
 
-    if(NOT APPLE)
-        SET(rt_library rt)
-    endif(NOT APPLE)
+  IF(NOT APPLE AND NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "OpenBSD")
+    SET(rt_library rt )
+  ENDIF(NOT APPLE AND NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "OpenBSD")
 ENDIF(NOT WIN32)
 
 IF($ENV{OPENSSL_ROOT_DIR})
@@ -159,8 +156,6 @@ IF( LIBCXX_HAVE_CXX_ATOMICS_WITH_LIB )
 ENDIF( LIBCXX_HAVE_CXX_ATOMICS_WITH_LIB )
 
 find_package(OpenSSL REQUIRED)
-
-option( UNITY_BUILD OFF )
 
 set( fc_sources
      src/popcount.cpp
@@ -244,7 +239,7 @@ list(APPEND sources ${fc_headers})
 
 add_subdirectory( vendor/websocketpp EXCLUDE_FROM_ALL )
 
-setup_library( fc SOURCES ${sources} LIBRARY_TYPE STATIC )
+add_library( fc ${sources} )
 install( DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include/" DESTINATION include )
 
 # begin editline stuff
